@@ -1,0 +1,104 @@
+{
+  "projectType": "saas",
+  "projectName": "Sistema Viajes (TRC)",
+  "projectDescription": "A web-based employee transportation management system for tracking trips, collaborators, branches, and transporters with role-based access control.",
+  "theme": "linden",
+  "primaryColor": "#848c8e",
+  "lightColor": "#11161e",
+  "darkColor": "#cfd0d2",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": ["introduction", "quickstart", "installation"]
+          },
+          {
+            "group": "Core Features",
+            "pages": [
+              "features/authentication",
+              "features/trips",
+              "features/collaborators",
+              "features/branches",
+              "features/transporters",
+              "features/reports"
+            ]
+          },
+          {
+            "group": "Administration",
+            "pages": [
+              "admin/roles",
+              "admin/dashboard",
+              "admin/database"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "Authentication",
+            "pages": ["api/login", "api/logout"]
+          },
+          {
+            "group": "Trips",
+            "pages": ["api/trips/list", "api/trips/create", "api/trips/distance"]
+          },
+          {
+            "group": "Collaborators",
+            "pages": ["api/collaborators/list", "api/collaborators/create", "api/collaborators/update", "api/collaborators/delete"]
+          },
+          {
+            "group": "Branches",
+            "pages": ["api/branches/list", "api/branches/create", "api/branches/update", "api/branches/delete"]
+          },
+          {
+            "group": "Transporters",
+            "pages": ["api/transporters/list", "api/transporters/create", "api/transporters/update", "api/transporters/delete"]
+          },
+          {
+            "group": "Reports",
+            "pages": ["api/reports/trips"]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Role-based access control (Admin / User)",
+    "Trip creation and management with cost and distance tracking",
+    "Collaborator (employee) management with branch assignments",
+    "Branch (sucursal) management across multiple locations",
+    "Transporter management with rate tracking",
+    "Trip reports with joined data across users, branches, and transporters",
+    "Session-based authentication with bcrypt password support",
+    "Soft-delete pattern for collaborators (cl_estado flag)"
+  ],
+  "publicApiSurface": [
+    "POST /user/login",
+    "GET /cerrar (logout)",
+    "GET /viajes",
+    "GET /viajes/:id (get collaborators by branch)",
+    "GET /viajes/distancia/:cedula/:sucursal",
+    "POST /viajes/create",
+    "GET /colaboradores",
+    "POST /colaboradores/create",
+    "GET /colaboradores/update/:id",
+    "POST /colaboradores/update",
+    "POST /colaboradores/delete/:id",
+    "GET /sucursales",
+    "POST /sucursales/create",
+    "GET /sucursales/update/:id",
+    "POST /sucursales/update",
+    "POST /sucursales/delete/:id",
+    "GET /transportistas",
+    "POST /transportistas/create",
+    "GET /transportistas/update/:id",
+    "POST /transportistas/update",
+    "POST /transportistas/delete/:id",
+    "GET /reportes"
+  ]
+}
