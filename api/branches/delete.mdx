@@ -1,0 +1,45 @@
+---
+title: "Delete branch"
+description: "Soft-delete a branch by setting its status to inactive."
+---
+
+## Overview
+
+Marks a branch as inactive (`sc_estado = 0`). The record is not removed from the database. Redirects to the branches page on completion.
+
+**Method**: `POST`  
+**Path**: `/sucursales/delete/:id`  
+**Auth required**: Yes (admin session)
+
+<Note>
+  This is a soft delete. The branch record is retained in the database with `sc_estado` set to `0`.
+</Note>
+
+## Request
+
+### Path parameters
+
+<ParamField path="id" type="number" required>
+  The ID of the branch to deactivate.
+</ParamField>
+
+## Response
+
+This endpoint responds with an HTTP redirect, not JSON.
+
+| Outcome | Redirect |
+|---------|----------|
+| Deactivation successful | `/sucursales` |
+
+## Example
+
+```bash cURL
+curl -b cookies.txt -X POST http://localhost:3000/sucursales/delete/3
+```
+
+## Error codes
+
+| Status | Condition |
+|--------|-----------|
+| `302` | Branch deactivated — redirect to `/sucursales` |
+| `302` | Unauthenticated — redirected to login |

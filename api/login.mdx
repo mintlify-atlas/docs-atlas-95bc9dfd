@@ -1,0 +1,73 @@
+---
+title: "Login"
+description: "Authenticate a user and start a session."
+---
+
+## Overview
+
+Submit user credentials to start a session. On success, the server stores the user object in the session and redirects based on role. On failure, the server returns a JSON error response.
+
+**Method**: `POST`  
+**Path**: `/user/login`  
+**Auth required**: No
+
+<Warning>
+  Password comparison is plain text — passwords are compared with a direct equality check, not a hash. The `bcrypt` dependency is installed but not used.
+</Warning>
+
+## Request
+
+### Body parameters
+
+Submit as `application/x-www-form-urlencoded` (HTML form).
+
+<ParamField body="correo" type="string" required>
+  The user's email address.
+</ParamField>
+
+<ParamField body="contra" type="string" required>
+  The user's password.
+</ParamField>
+
+## Response
+
+This endpoint responds with an HTTP redirect, not JSON. The redirect destination depends on the user's role.
+
+| Role ID | Role | Redirect |
+|---------|------|----------|
+| `1` | Gerente de Tienda (admin) | `/dashboardAdmin` |
+| `2` | Usuario | `/dashboard` |
+
+<Note>
+  The session (`req.session.usuario`) is only written for role `1` users in the current implementation. Role `2` users are redirected without a session being set.
+</Note>
+
+On failure, the endpoint returns a JSON error:
+
+<ResponseField name="error" type="string">
+  Human-readable error message.
+</ResponseField>
+
+## Example
+
+```bash cURL
+curl -c cookies.txt -X POST http://localhost:3000/user/login \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "correo=admin%40example.com&contra=secret"
+```
+
+```html HTML form
+<form method="POST" action="/user/login">
+  <input type="email" name="correo" placeholder="Email" />
+  <input type="password" name="contra" placeholder="Password" />
+  <button type="submit">Login</button>
+</form>
+```
+
+## Error codes
+
+| Status | Condition | Response body |
+|--------|-----------|---------------|
+| `302` | Success | Redirect to `/dashboardAdmin` or `/dashboard` |
+| `404` | No user found with the given email | `{ "error": "Usuario no encontrado" }` |
+| `401` | Password does not match | `{ "error": "Credenciales inválidas" }` |

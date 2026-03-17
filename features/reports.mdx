@@ -1,0 +1,62 @@
+---
+title: "Reports"
+description: "View aggregated trip data across all collaborators, branches, and transporters."
+---
+
+## Overview
+
+The reports (reportes) module provides a consolidated view of all recorded trips. It joins the `viajes`, `usuarios`, `sucursales`, and `transportistas` tables to display a human-readable summary of every trip in the system.
+
+## Accessing reports
+
+Send a `GET` request to `/reportes` to render the reports page:
+
+```http
+GET /reportes
+```
+
+The page is rendered with the `reportes` EJS template and receives the query results as the `via` variable.
+
+## Report columns
+
+Each row in the report corresponds to one trip and includes the following columns:
+
+| Column | Source table | Description |
+|---|---|---|
+| `us_nombre` | `usuarios` | Collaborator name |
+| `sc_nombre` | `sucursales` | Branch name |
+| `tr_nombre` | `transportistas` | Transporter name |
+| `vj_costo` | `viajes` | Trip cost |
+| `vj_recorrido` | `viajes` | Distance in km |
+| `vj_fecha` | `viajes` | Trip date (date portion only) |
+
+## SQL query
+
+The controller executes the following raw query using Sequelize:
+
+```sql
+SELECT
+  us.us_nombre,
+  suc.sc_nombre,
+  tr.tr_nombre,
+  vj.vj_costo,
+  vj.vj_recorrido,
+  DATE(vj.vj_fecha) AS vj_fecha
+FROM viajes AS vj
+INNER JOIN usuarios AS us ON us.us_id = vj.us_id
+INNER JOIN sucursales AS suc ON suc.sc_id = vj.sc_id
+INNER JOIN transportistas AS tr ON tr.tr_id = vj.tr_id
+```
+
+## Current limitations
+
+<Note>
+  The report currently shows **all trips** with no filtering, pagination, or date range selection. Every row in the `viajes` table is returned in a single query regardless of volume.
+</Note>
+
+Features not yet implemented:
+
+- Filtering by date range, branch, collaborator, or transporter
+- Pagination
+- Export to CSV or other formats
+- Cost totals or aggregated statistics

@@ -1,97 +1,73 @@
 ---
-title: "Introduction"
-description: "Welcome to the new home for your documentation"
+title: "Sistema Viajes"
+description: "Employee transportation management for multi-branch organizations"
+mode: "custom"
 ---
 
-## Setting up
+<div style={{background: "#020627", minHeight: "100vh", padding: "0"}}>
 
-Get your documentation site up and running in minutes.
+  <div style={{maxWidth: "1100px", margin: "0 auto", padding: "80px 24px 48px"}}>
 
-<Card
-  title="Start here"
-  icon="rocket"
-  href="/quickstart"
-  horizontal
->
-  Follow our three step quickstart guide.
-</Card>
+    <div style={{textAlign: "center", marginBottom: "64px"}}>
+      <div style={{display: "inline-block", background: "rgba(82,156,58,0.15)", border: "1px solid rgba(82,156,58,0.4)", borderRadius: "20px", padding: "6px 18px", marginBottom: "24px"}}>
+        <span style={{color: "#529c3a", fontSize: "14px", fontWeight: 600}}>Sistema Viajes TRC</span>
+      </div>
+      <h1 style={{color: "#ffffff", fontSize: "52px", fontWeight: 700, fontFamily: "Inter, sans-serif", lineHeight: 1.1, marginBottom: "24px"}}>
+        Employee Transportation<br/>Management
+      </h1>
+      <p style={{color: "#9ca3af", fontSize: "18px", maxWidth: "600px", margin: "0 auto 40px", lineHeight: 1.6}}>
+        Coordinate employee trips across branches, manage transporters, track costs and distances, and generate detailed transportation reports — all in one place.
+      </p>
+      <div style={{display: "flex", gap: "16px", justifyContent: "center", flexWrap: "wrap"}}>
+        <a href="/quickstart" style={{background: "#238636", color: "#ffffff", padding: "12px 28px", borderRadius: "6px", fontWeight: 600, textDecoration: "none", fontSize: "16px"}}>
+          Get Started
+        </a>
+        <a href="/introduction" style={{background: "transparent", color: "#ffffff", padding: "12px 28px", borderRadius: "6px", fontWeight: 600, textDecoration: "none", fontSize: "16px", border: "1px solid rgba(255,255,255,0.3)"}}>
+          Read the Docs
+        </a>
+      </div>
+    </div>
 
-## Make it yours
+    <div style={{display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "24px", marginBottom: "64px"}}>
+      <div style={{background: "rgba(48,54,79,1)", border: "1px solid rgba(96,99,146,1)", borderRadius: "12px", padding: "28px"}}>
+        <div style={{fontSize: "28px", marginBottom: "12px"}}>🚗</div>
+        <h3 style={{color: "#ffffff", fontWeight: 700, fontSize: "18px", marginBottom: "8px"}}>Trip Management</h3>
+        <p style={{color: "#9ca3af", fontSize: "15px", lineHeight: 1.6}}>Create and track employee trips with cost, distance, branch assignment, and transporter selection. Validate distances up to 150 km.</p>
+      </div>
+      <div style={{background: "rgba(48,54,79,1)", border: "1px solid rgba(96,99,146,1)", borderRadius: "12px", padding: "28px"}}>
+        <div style={{fontSize: "28px", marginBottom: "12px"}}>👥</div>
+        <h3 style={{color: "#ffffff", fontWeight: 700, fontSize: "18px", marginBottom: "8px"}}>Collaborator Profiles</h3>
+        <p style={{color: "#9ca3af", fontSize: "15px", lineHeight: 1.6}}>Manage employees with multi-branch assignments and per-route distance tracking using a composite key structure.</p>
+      </div>
+      <div style={{background: "rgba(48,54,79,1)", border: "1px solid rgba(96,99,146,1)", borderRadius: "12px", padding: "28px"}}>
+        <div style={{fontSize: "28px", marginBottom: "12px"}}>🏢</div>
+        <h3 style={{color: "#ffffff", fontWeight: 700, fontSize: "18px", marginBottom: "8px"}}>Branch Network</h3>
+        <p style={{color: "#9ca3af", fontSize: "15px", lineHeight: 1.6}}>Maintain a directory of company branches (sucursales) with addresses and active status for trip destination selection.</p>
+      </div>
+      <div style={{background: "rgba(48,54,79,1)", border: "1px solid rgba(96,99,146,1)", borderRadius: "12px", padding: "28px"}}>
+        <div style={{fontSize: "28px", marginBottom: "12px"}}>🚌</div>
+        <h3 style={{color: "#ffffff", fontWeight: 700, fontSize: "18px", marginBottom: "8px"}}>Transporter Directory</h3>
+        <p style={{color: "#9ca3af", fontSize: "15px", lineHeight: 1.6}}>Register transport providers with their rates and availability status for assignment to trips.</p>
+      </div>
+      <div style={{background: "rgba(48,54,79,1)", border: "1px solid rgba(96,99,146,1)", borderRadius: "12px", padding: "28px"}}>
+        <div style={{fontSize: "28px", marginBottom: "12px"}}>📊</div>
+        <h3 style={{color: "#ffffff", fontWeight: 700, fontSize: "18px", marginBottom: "8px"}}>Reports</h3>
+        <p style={{color: "#9ca3af", fontSize: "15px", lineHeight: 1.6}}>Generate trip reports with joined data across users, branches, transporters, costs, distances, and dates.</p>
+      </div>
+      <div style={{background: "rgba(48,54,79,1)", border: "1px solid rgba(96,99,146,1)", borderRadius: "12px", padding: "28px"}}>
+        <div style={{fontSize: "28px", marginBottom: "12px"}}>🔐</div>
+        <h3 style={{color: "#ffffff", fontWeight: 700, fontSize: "18px", marginBottom: "8px"}}>Role-Based Access</h3>
+        <p style={{color: "#9ca3af", fontSize: "15px", lineHeight: 1.6}}>Two-tier role system — Store Manager with full admin access and standard User with limited permissions.</p>
+      </div>
+    </div>
 
-Design a docs site that looks great and empowers your users.
+    <div style={{background: "rgba(48,54,79,0.5)", border: "1px solid rgba(96,99,146,0.5)", borderRadius: "12px", padding: "40px", textAlign: "center"}}>
+      <h2 style={{color: "#ffffff", fontSize: "28px", fontWeight: 700, marginBottom: "16px"}}>Ready to get started?</h2>
+      <p style={{color: "#9ca3af", fontSize: "16px", marginBottom: "28px"}}>Follow the quickstart guide to have Sistema Viajes running locally in under 10 minutes.</p>
+      <a href="/quickstart" style={{background: "#238636", color: "#ffffff", padding: "12px 32px", borderRadius: "6px", fontWeight: 600, textDecoration: "none", fontSize: "16px"}}>
+        Start the quickstart guide
+      </a>
+    </div>
 
-<Columns cols={2}>
-  <Card
-    title="Edit locally"
-    icon="pen-to-square"
-    href="/development"
-  >
-    Edit your docs locally and preview them in real time.
-  </Card>
-  <Card
-    title="Customize your site"
-    icon="palette"
-    href="/essentials/settings"
-  >
-    Customize the design and colors of your site to match your brand.
-  </Card>
-    <Card
-    title="Set up navigation"
-    icon="map"
-    href="/essentials/navigation"
-  >
-    Organize your docs to help users find what they need and succeed with your product.
-  </Card>
-  <Card
-    title="API documentation"
-    icon="terminal"
-    href="/api-reference/introduction"
-  >
-    Auto-generate API documentation from OpenAPI specifications.
-  </Card>
-</Columns>
-
-## Create beautiful pages
-
-Everything you need to create world-class documentation.
-
-<Columns cols={2}>
-  <Card
-    title="Write with MDX"
-    icon="pen-fancy"
-    href="/essentials/markdown"
-  >
-    Use MDX to style your docs pages.
-  </Card>
-  <Card
-    title="Code samples"
-    icon="code"
-    href="/essentials/code"
-  >
-    Add sample code to demonstrate how to use your product.
-  </Card>
-  <Card
-    title="Images"
-    icon="image"
-    href="/essentials/images"
-  >
-    Display images and other media.
-  </Card>
-  <Card
-    title="Reusable snippets"
-    icon="recycle"
-    href="/essentials/reusable-snippets"
-  >
-    Write once and reuse across your docs.
-  </Card>
-</Columns>
-
-## Need inspiration?
-
-<Card
-  title="See complete examples"
-  icon="stars"
-  href="https://mintlify.com/customers"
->
-  Browse our showcase of exceptional documentation sites.
-</Card>
+  </div>
+</div>

@@ -1,0 +1,189 @@
+---
+title: "Installation"
+description: "Detailed guide to installing, configuring, and verifying Sistema Viajes"
+---
+
+This guide covers every step required to install and configure Sistema Viajes in a local or server environment.
+
+## System requirements
+
+| Requirement | Minimum version |
+|---|---|
+| Node.js | 18.x |
+| npm | 8.x (bundled with Node.js 18) |
+| MySQL | 5.7+ |
+| MariaDB | 10.4+ (alternative to MySQL) |
+
+<Info>
+  Sistema Viajes uses Sequelize 6 as its ORM. Only MySQL and MariaDB dialects are supported by the current configuration.
+</Info>
+
+## Clone the repository
+
+```bash
+git clone https://github.com/molina071/TRC.git
+cd TRC
+```
+
+## Install dependencies
+
+All runtime dependencies are declared in `package.json`. Install them with:
+
+```bash
+npm install
+```
+
+This installs the following packages:
+
+| Package | Version | Purpose |
+|---|---|---|
+| `express` | ^5.2.1 | HTTP server and routing |
+| `ejs` | ^4.0.1 | Server-side HTML templating |
+| `sequelize` | ^6.37.7 | ORM for MySQL/MariaDB |
+| `mysql2` | ^3.16.1 | MySQL driver for Sequelize |
+| `bcrypt` | ^6.0.0 | Password hashing |
+| `express-session` | ^1.19.0 | Session management |
+| `body-parser` | ^2.2.2 | Request body parsing |
+
+## Database setup
+
+<Steps>
+  <Step title="Create the database">
+    <Tabs>
+      <Tab title="CLI">
+        ```bash
+        mysql -u root -p -e "CREATE DATABASE sistema_viajes CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+        ```
+      </Tab>
+      <Tab title="phpMyAdmin">
+        1. Open phpMyAdmin in your browser (typically `http://localhost/phpmyadmin`).
+        2. Click **New** in the left sidebar.
+        3. Enter `sistema_viajes` as the database name.
+        4. Select `utf8mb4_unicode_ci` as the collation.
+        5. Click **Create**.
+      </Tab>
+    </Tabs>
+  </Step>
+
+  <Step title="Import the SQL dump">
+    The repository includes a complete SQL dump at `BD/sistema_viajes.sql`. It creates all tables and seeds the default users and roles.
+
+    <Tabs>
+      <Tab title="CLI">
+        ```bash
+        mysql -u root -p sistema_viajes < BD/sistema_viajes.sql
+        ```
+      </Tab>
+      <Tab title="phpMyAdmin">
+        1. Select the `sistema_viajes` database in the left sidebar.
+        2. Click the **Import** tab.
+        3. Click **Choose File** and select `BD/sistema_viajes.sql`.
+        4. Leave all other settings at their defaults.
+        5. Click **Import**.
+      </Tab>
+    </Tabs>
+  </Step>
+</Steps>
+
+## Configuring the database connection
+
+The database connection is defined in `config/Conexion.js`. Open this file and update it with your MySQL credentials:
+
+```js
+const { Sequelize } = require('sequelize');
+const sequelize = new Sequelize('sistema_viajes', 'root', '', {
+    host: "localhost",
+    dialect: 'mysql',
+});
+module.exports = sequelize;
+```
+
+| Parameter | Description | Default |
+|---|---|---|
+| First argument | Database name | `sistema_viajes` |
+| Second argument | MySQL username | `root` |
+| Third argument | MySQL password | `''` (empty) |
+| `host` | MySQL server hostname | `localhost` |
+| `dialect` | Database type | `mysql` |
+
+<Warning>
+  Do not commit real database credentials to source control. Consider using environment variables and a `.env` file (with `dotenv`) to keep credentials out of `config/Conexion.js`.
+</Warning>
+
+## Session secret
+
+The session secret is currently hardcoded in `app.js`:
+
+```js
+app.use(session({ secret: "f93j2k!@#9sd8fjsd8fj...", resave: false, saveUninitialized: false }));
+```
+
+<Warning>
+  The default secret is public. Before deploying to any non-local environment, replace it with a long, randomly generated string. Store the value in an environment variable rather than in source code.
+</Warning>
+
+A minimal improvement using an environment variable:
+
+```js
+app.use(session({ secret: process.env.SESSION_SECRET || "change-me", resave: false, saveUninitialized: false }));
+```
+
+## Starting the server
+
+Once the database is configured, start the application:
+
+```bash
+node app.js
+```
+
+Sequelize will sync the database schema on startup. A successful start prints:
+
+```
+Server is running on port 3000
+```
+
+<Note>
+  The default port is **3000**. Override it by setting the `PORT` environment variable before starting the server:
+
+  ```bash
+  PORT=8080 node app.js
+  ```
+</Note>
+
+## Verifying the installation
+
+<Steps>
+  <Step title="Open the app">
+    Navigate to [http://localhost:3000](http://localhost:3000). The login page should load.
+  </Step>
+
+  <Step title="Log in with the default admin account">
+    | Field | Value |
+    |---|---|
+    | Email | `jpenia55@gmail.com` |
+    | Password | `nancy` |
+
+    A successful login redirects you to `/dashboardAdmin`.
+  </Step>
+
+  <Step title="Verify database connectivity">
+    If the login page loads but login fails, check that:
+
+    - The `sistema_viajes` database exists and the SQL dump was imported.
+    - The credentials in `config/Conexion.js` are correct.
+    - MySQL/MariaDB is running and accessible on the configured host.
+  </Step>
+</Steps>
+
+## Default accounts
+
+The SQL dump seeds two accounts for testing:
+
+| Name | Email | Password | Role |
+|---|---|---|---|
+| Nancy | `jpenia55@gmail.com` | `nancy` | Gerente de Tienda (admin) |
+| Josue | `7josueortega111@gmail.com` | `josue` | Usuario (standard) |
+
+<Warning>
+  Change the default passwords immediately after your first login, especially in any environment accessible over a network.
+</Warning>

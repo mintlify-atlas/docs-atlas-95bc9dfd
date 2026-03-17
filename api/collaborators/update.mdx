@@ -1,0 +1,124 @@
+---
+title: "Update collaborator"
+description: "Retrieve a collaborator's current data or submit updated values."
+---
+
+## Overview
+
+Two endpoints handle collaborator updates:
+
+1. `GET /colaboradores/update/:id` — returns the current collaborator data as JSON for pre-filling an edit form.
+2. `POST /colaboradores/update` — submits updated values and redirects on success.
+
+---
+
+## GET — fetch collaborator for editing
+
+**Method**: `GET`  
+**Path**: `/colaboradores/update/:id`  
+**Auth required**: Yes (admin session)
+
+### Path parameters
+
+<ParamField path="id" type="number" required>
+  The collaborator's ID.
+</ParamField>
+
+### Response
+
+Returns a JSON object.
+
+<ResponseField name="vista" type="object">
+  The collaborator record to be edited.
+  <Expandable title="properties">
+    <ResponseField name="cl_cedula" type="string">National ID number.</ResponseField>
+    <ResponseField name="cl_nombre" type="string">First name.</ResponseField>
+    <ResponseField name="cl_apellido" type="string">Last name.</ResponseField>
+    <ResponseField name="cl_direccion" type="string">Home address.</ResponseField>
+    <ResponseField name="cl_estado" type="number">Active status (`1` = active).</ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="results" type="object[]">
+  Array of all branch records for the branch selector.
+</ResponseField>
+
+### Example
+
+```bash cURL
+curl -b cookies.txt http://localhost:3000/colaboradores/update/5
+```
+
+```json 200 OK
+{
+  "vista": {
+    "cl_cedula": "1-0123-0456",
+    "cl_nombre": "María",
+    "cl_apellido": "García",
+    "cl_direccion": "San José Centro",
+    "cl_estado": 1
+  },
+  "results": [
+    { "sc_id": 1, "sc_nombre": "Sucursal Central" },
+    { "sc_id": 2, "sc_nombre": "Sucursal Norte" }
+  ]
+}
+```
+
+---
+
+## POST — submit update
+
+**Method**: `POST`  
+**Path**: `/colaboradores/update`  
+**Auth required**: Yes (admin session)
+
+### Body parameters
+
+Submit as `application/x-www-form-urlencoded` (HTML form).
+
+<ParamField body="up_cedula" type="string" required>
+  The collaborator's national ID number.
+</ParamField>
+
+<ParamField body="up_sucursal" type="number" required>
+  The updated branch assignment (`sc_id`).
+</ParamField>
+
+<ParamField body="up_nombre" type="string" required>
+  Updated first name.
+</ParamField>
+
+<ParamField body="up_apellido" type="string" required>
+  Updated last name.
+</ParamField>
+
+<ParamField body="up_direccion" type="string" required>
+  Updated home address.
+</ParamField>
+
+<ParamField body="up_distancia" type="number" required>
+  Updated distance in kilometers. Must be between `1` and `50`.
+</ParamField>
+
+### Response
+
+| Outcome | Redirect |
+|---------|----------|
+| Update successful | `/colaboradores` |
+
+### Example
+
+```bash cURL
+curl -b cookies.txt -X POST http://localhost:3000/colaboradores/update \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "up_cedula=1-0123-0456&up_sucursal=2&up_nombre=María&up_apellido=García&up_direccion=San+José+Centro&up_distancia=14"
+```
+
+## Error codes
+
+| Status | Condition |
+|--------|-----------|
+| `200` | GET — returns JSON object with collaborator and branch data |
+| `302` | POST — update successful, redirect to `/colaboradores` |
+| `302` | Unauthenticated — redirected to login |

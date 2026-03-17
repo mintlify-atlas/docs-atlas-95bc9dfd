@@ -1,0 +1,54 @@
+---
+title: "Get trip distance"
+description: "Return the stored distance between a collaborator and a branch."
+---
+
+## Overview
+
+Looks up the distance (in kilometers) recorded for a collaborator–branch assignment. Used to pre-fill the distance field on the trip creation form.
+
+**Method**: `GET`  
+**Path**: `/viajes/distancia/:cedula/:sucursal`  
+**Auth required**: Yes (admin session)
+
+## Request
+
+### Path parameters
+
+<ParamField path="cedula" type="string" required>
+  The collaborator's national ID (`cl_cedula`).
+</ParamField>
+
+<ParamField path="sucursal" type="number" required>
+  The branch ID (`sc_id`).
+</ParamField>
+
+## Response
+
+Returns a JSON object on success.
+
+<ResponseField name="distancia" type="number">
+  The distance in kilometers between the collaborator's address and the branch.
+</ResponseField>
+
+## Example
+
+```bash cURL
+curl -b cookies.txt http://localhost:3000/viajes/distancia/1-0123-0456/3
+```
+
+```json 200 OK
+{ "distancia": 18 }
+```
+
+```json 404 Not found
+{ "message": "No se encontró distancia para ese colaborador/sucursal" }
+```
+
+## Error codes
+
+| Status | Condition |
+|--------|-----------|
+| `200` | Distance found |
+| `404` | No `colaborador_sucursal` record for the given cedula and branch ID |
+| `302` | Unauthenticated — redirected to login |

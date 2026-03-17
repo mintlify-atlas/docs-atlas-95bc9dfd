@@ -1,0 +1,49 @@
+---
+title: "Create transporter"
+description: "Add a new transporter with a name and rate."
+---
+
+## Overview
+
+Creates a new transporter record. Redirects back to the transporters page on success.
+
+**Method**: `POST`  
+**Path**: `/transportistas/create`  
+**Auth required**: Yes (admin session)
+
+## Request
+
+### Body parameters
+
+Submit as `application/x-www-form-urlencoded` (HTML form).
+
+<ParamField body="tr_nombre" type="string" required>
+  Name of the transporter or transport company.
+</ParamField>
+
+<ParamField body="tr_tarifa" type="number" required>
+  Per-kilometer rate charged by the transporter.
+</ParamField>
+
+## Response
+
+This endpoint responds with an HTTP redirect, not JSON.
+
+| Outcome | Redirect |
+|---------|----------|
+| Transporter created successfully | `/transportistas` |
+
+## Example
+
+```bash cURL
+curl -b cookies.txt -X POST http://localhost:3000/transportistas/create \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "tr_nombre=Transportes+Rápidos+SA&tr_tarifa=350"
+```
+
+## Error codes
+
+| Status | Condition |
+|--------|-----------|
+| `302` | Transporter created — redirect to `/transportistas` |
+| `302` | Unauthenticated — redirected to login |

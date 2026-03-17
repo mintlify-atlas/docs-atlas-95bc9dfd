@@ -1,0 +1,75 @@
+---
+title: "Update transporter"
+description: "Retrieve a transporter's current data or submit updated values."
+---
+
+## Overview
+
+Two endpoints handle transporter updates:
+
+1. `GET /transportistas/update/:id` — retrieves transporter data for pre-filling an edit form. Returns an HTML page.
+2. `POST /transportistas/update` — submits updated values and redirects on success.
+
+---
+
+## GET — fetch transporter for editing
+
+**Method**: `GET`  
+**Path**: `/transportistas/update/:id`  
+**Auth required**: Yes (admin session)
+
+### Path parameters
+
+<ParamField path="id" type="number" required>
+  The transporter ID (`tr_id`) to retrieve.
+</ParamField>
+
+### Response
+
+Returns an HTML page with the transporter's current data pre-filled in an edit form.
+
+---
+
+## POST — submit update
+
+**Method**: `POST`  
+**Path**: `/transportistas/update`  
+**Auth required**: Yes (admin session)
+
+### Body parameters
+
+Submit as `application/x-www-form-urlencoded` (HTML form).
+
+<ParamField body="tr_id" type="number" required>
+  The ID of the transporter to update.
+</ParamField>
+
+<ParamField body="tr_nombre" type="string" required>
+  Updated transporter name.
+</ParamField>
+
+<ParamField body="tr_tarifa" type="number" required>
+  Updated per-kilometer rate.
+</ParamField>
+
+### Response
+
+| Outcome | Redirect |
+|---------|----------|
+| Update successful | `/transportistas` |
+
+### Example
+
+```bash cURL
+curl -b cookies.txt -X POST http://localhost:3000/transportistas/update \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "tr_id=1&tr_nombre=Transportes+Rápidos+SA&tr_tarifa=400"
+```
+
+## Error codes
+
+| Status | Condition |
+|--------|-----------|
+| `200` | GET — returns HTML edit form |
+| `302` | POST — update successful, redirect to `/transportistas` |
+| `302` | Unauthenticated — redirected to login |

@@ -1,0 +1,95 @@
+---
+title: "Trips"
+description: "Create and manage employee transportation trips between branches and collaborators."
+---
+
+## Overview
+
+The trips (viajes) module records each employee transportation event. A trip links a collaborator to a branch using a specific transporter, and captures the cost and distance of the journey.
+
+<Info>
+  The trips module is restricted to administrators. Only users with `rl_id = 1` (Gerente de Tienda) can access `GET /viajes` and create trips.
+</Info>
+
+## Data model
+
+Trips are stored in the `viajes` table with the following fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `vj_id` | INT (PK, auto-increment) | Unique trip identifier |
+| `us_id` | INT (FK) | Collaborator user ID |
+| `sc_id` | INT (FK) | Branch ID |
+| `tr_id` | INT (FK) | Transporter ID |
+| `vj_costo` | DECIMAL(7,2) | Trip cost |
+| `vj_recorrido` | INT | Distance in kilometers |
+| `vj_fecha` | DATE | Trip date (set automatically) |
+| `vj_estado` | TINYINT | Record status (`1` = active) |
+
+## Creating a trip
+
+Trip creation uses a multi-step form where each selection filters the next available options dynamically.
+
+<Steps>
+  <Step title="Select a branch">
+    Choose a branch from the dropdown. This triggers an AJAX request to `GET /viajes/:id` to fetch the collaborators assigned to that branch.
+  </Step>
+  <Step title="Select a collaborator">
+    Choose a collaborator from the filtered list. This triggers a request to `GET /viajes/distancia/:cedula/:sucursal` to retrieve the pre-configured distance for that collaborator/branch pair.
+  </Step>
+  <Step title="Review the distance">
+    The distance field is populated automatically from the `colaborador_sucursal` table. Verify the value before proceeding.
+  </Step>
+  <Step title="Enter cost and submit">
+    Enter the trip cost, select a transporter, and submit the form. The form posts to `POST /viajes/create`.
+  </Step>
+</Steps>
+
+## Validation rules
+
+The following validations are enforced server-side in `viajesController.js`:
+
+<Tabs>
+  <Tab title="Cost">
+    The cost field (`costo_vj`) must be greater than zero. A value of `0` or `null` throws:
+
+    ```
+    El costo no puede ser 0
+    ```
+  </Tab>
+  <Tab title="Distance">
+    The distance field (`vj_recorrido`) must be between 1 and 150 km (inclusive). Values outside this range throw:
+
+    ```
+    El recorrido no puede exceder los 100km o estar vacio
+    ```
+  </Tab>
+</Tabs>
+
+## Routes
+
+| Method | Path | Description |
+|---|---|---|
+| `GET` | `/viajes` | List all trips (admin only) |
+| `GET` | `/viajes/:id` | Get collaborators for a given branch ID |
+| `GET` | `/viajes/distancia/:cedula/:sucursal` | Get stored distance for a collaborator/branch pair |
+| `POST` | `/viajes/create` | Create a new trip |
+
+## Create trip request
+
+```http
+POST /viajes/create
+Content-Type: application/x-www-form-urlencoded
+
+usuario_vj=Juan+Perez&sucursal_vj=1&transportista_vj=2&costo_vj=55.00&vj_recorrido=30
+```
+
+| Field | Description |
+|---|---|
+| `usuario_vj` | Collaborator's full name (looked up by name to resolve `us_id`) |
+| `sucursal_vj` | Branch ID (`sc_id`) |
+| `transportista_vj` | Transporter ID (`tr_id`) |
+| `costo_vj` | Trip cost (must be > 0) |
+| `vj_recorrido` | Distance in km (1–150) |
+
+On success, the controller redirects to `/viajes`.

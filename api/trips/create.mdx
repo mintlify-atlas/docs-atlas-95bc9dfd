@@ -1,0 +1,65 @@
+---
+title: "Create trip"
+description: "Record a new employee transportation trip."
+---
+
+## Overview
+
+Creates a new trip record and redirects back to the trips page. All fields are required.
+
+**Method**: `POST`  
+**Path**: `/viajes/create`  
+**Auth required**: Yes (admin session)
+
+## Request
+
+### Body parameters
+
+Submit as `application/x-www-form-urlencoded` (HTML form).
+
+<ParamField body="usuario_vj" type="string" required>
+  Cedula of the collaborator taking the trip. Resolved to `us_id` internally.
+</ParamField>
+
+<ParamField body="sucursal_vj" type="number" required>
+  Branch ID (`sc_id`) where the trip is going.
+</ParamField>
+
+<ParamField body="transportista_vj" type="number" required>
+  Transporter ID (`tr_id`) assigned to the trip.
+</ParamField>
+
+<ParamField body="costo_vj" type="number" required>
+  Cost of the trip. Must not be `0` or empty.
+</ParamField>
+
+<ParamField body="vj_recorrido" type="number" required>
+  Distance traveled in kilometers. Must be between `1` and `150`.
+</ParamField>
+
+## Response
+
+This endpoint responds with an HTTP redirect, not JSON.
+
+| Outcome | Redirect |
+|---------|----------|
+| Trip created successfully | `/viajes` |
+
+## Example
+
+```bash cURL
+curl -b cookies.txt -X POST http://localhost:3000/viajes/create \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "usuario_vj=1-0123-0456&sucursal_vj=2&transportista_vj=1&costo_vj=4500&vj_recorrido=25"
+```
+
+## Error codes
+
+| Status | Condition |
+|--------|-----------|
+| `302` | Trip created — redirect to `/viajes` |
+| `302` | Unauthenticated — redirected to login |
+
+<Warning>
+  No server-side validation error response is returned for invalid field values. Ensure `costo_vj` is non-zero and `vj_recorrido` is between 1 and 150 before submitting.
+</Warning>

@@ -1,0 +1,96 @@
+---
+title: "Authentication"
+description: "Session-based login with role-based access control for Sistema Viajes."
+---
+
+## Overview
+
+Sistema Viajes uses session-based authentication. Users log in with an email address and password. On success, the full user object is stored in the server-side session and the user is redirected based on their role.
+
+## Login
+
+The login form submits a `POST` request to `/user/login` with two fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `correo` | string | The user's email address |
+| `contra` | string | The user's password |
+
+```http
+POST /user/login
+Content-Type: application/x-www-form-urlencoded
+
+correo=admin%40example.com&contra=secret
+```
+
+### Login flow
+
+<Steps>
+  <Step title="Submit credentials">
+    The login form sends `correo` and `contra` to `POST /user/login`.
+  </Step>
+  <Step title="Look up the user">
+    The controller queries the `usuarios` table for a record where `us_correo` matches the submitted email. If no record is found, the server returns `404 { error: 'Usuario no encontrado' }`.
+  </Step>
+  <Step title="Compare password">
+    The submitted password is compared directly against the stored value. If they do not match, the server returns `401 { error: 'Credenciales inválidas' }`.
+  </Step>
+  <Step title="Store session and redirect">
+    On a successful match, the full user object is stored in `req.session.usuario`. The user is then redirected based on their role (see below).
+  </Step>
+</Steps>
+
+<Warning>
+  Password comparison is currently **plain text**. The `bcrypt` dependency is installed but not used in the login controller. Passwords are compared with a direct equality check (`===`), not a hash comparison.
+</Warning>
+
+## Role-based redirect
+
+After a successful login, the redirect destination depends on the `rl_id` field of the authenticated user:
+
+| Role ID | Role name | Redirect |
+|---|---|---|
+| `1` | Gerente de Tienda | `/dashboardAdmin` |
+| `2` | Usuario | `/dashboard` |
+
+```javascript
+if (usuario.rl_id === 1) {
+  req.session.usuario = usuario;
+  return res.redirect('/dashboardAdmin');
+}
+return res.redirect('/dashboard');
+```
+
+<Note>
+  The session is only written for role `1` (admin) users in the current implementation. Role `2` users are redirected without the session being set.
+</Note>
+
+## Session storage
+
+The authenticated user object is available throughout the request lifecycle as `req.session.usuario`. It contains all columns from the `usuarios` table row, including `rl_id`, `us_correo`, and `us_nombre`.
+
+Session configuration in `app.js`:
+
+```javascript
+app.use(session({
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false
+}));
+```
+
+## Logout
+
+Sending a `GET` request to `/cerrar` ends the session:
+
+1. `req.session.destroy()` is called to remove the server-side session.
+2. The session cookie is cleared from the client.
+3. The user is redirected to `/index`.
+
+```http
+GET /cerrar
+```
+
+## Access control
+
+Route-level access control is enforced by checking `req.session.usuario.rl_id`. Admin-only routes verify that the value equals `1` before proceeding. Unauthenticated requests are redirected to the login page.

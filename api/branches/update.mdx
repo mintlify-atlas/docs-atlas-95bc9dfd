@@ -1,0 +1,75 @@
+---
+title: "Update branch"
+description: "Retrieve a branch's current data or submit updated values."
+---
+
+## Overview
+
+Two endpoints handle branch updates:
+
+1. `GET /sucursales/update/:id` — retrieves branch data for pre-filling an edit form. Returns an HTML page.
+2. `POST /sucursales/update` — submits updated values and redirects on success.
+
+---
+
+## GET — fetch branch for editing
+
+**Method**: `GET`  
+**Path**: `/sucursales/update/:id`  
+**Auth required**: Yes (admin session)
+
+### Path parameters
+
+<ParamField path="id" type="number" required>
+  The branch ID (`sc_id`) to retrieve.
+</ParamField>
+
+### Response
+
+Returns an HTML page with the branch's current data pre-filled in an edit form.
+
+---
+
+## POST — submit update
+
+**Method**: `POST`  
+**Path**: `/sucursales/update`  
+**Auth required**: Yes (admin session)
+
+### Body parameters
+
+Submit as `application/x-www-form-urlencoded` (HTML form).
+
+<ParamField body="sc_id" type="number" required>
+  The ID of the branch to update.
+</ParamField>
+
+<ParamField body="sc_nombre" type="string" required>
+  Updated branch name.
+</ParamField>
+
+<ParamField body="sc_direccion" type="string" required>
+  Updated branch address.
+</ParamField>
+
+### Response
+
+| Outcome | Redirect |
+|---------|----------|
+| Update successful | `/sucursales` |
+
+### Example
+
+```bash cURL
+curl -b cookies.txt -X POST http://localhost:3000/sucursales/update \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "sc_id=2&sc_nombre=Sucursal+Norte+Actualizada&sc_direccion=Av.+Principal+200"
+```
+
+## Error codes
+
+| Status | Condition |
+|--------|-----------|
+| `200` | GET — returns HTML edit form |
+| `302` | POST — update successful, redirect to `/sucursales` |
+| `302` | Unauthenticated — redirected to login |

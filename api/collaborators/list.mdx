@@ -1,0 +1,38 @@
+---
+title: "List collaborators"
+description: "Render the collaborators management page with all active collaborators."
+---
+
+## Overview
+
+Renders the `colaboradores` view. Returns an HTML page — not a JSON response. The page includes all active collaborators (`cl_estado = 1`) and a list of all branches for the assignment form.
+
+**Method**: `GET`  
+**Path**: `/colaboradores`  
+**Auth required**: Yes (admin session)
+
+## Request
+
+No parameters required.
+
+## Response
+
+Returns an HTML page. The template receives:
+
+| Variable | Description |
+|----------|-------------|
+| `colaboradores` | Array of active collaborator records |
+| `sucursales` | Array of all branch records |
+
+## Example
+
+```bash cURL
+curl -b cookies.txt http://localhost:3000/colaboradores
+```
+
+## Error codes
+
+| Status | Condition |
+|--------|-----------|
+| `200` | Returns the collaborators HTML page |
+| `302` | Unauthenticated — redirected to login |

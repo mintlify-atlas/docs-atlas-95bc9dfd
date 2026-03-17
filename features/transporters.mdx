@@ -1,0 +1,58 @@
+---
+title: "Transporters"
+description: "Manage transportation providers and their rates in Sistema Viajes."
+---
+
+## Overview
+
+Transporters (transportistas) are the service providers used to carry out trips. Each transporter has a base rate (`tr_tarifa`) and is selected during trip creation.
+
+## Data model
+
+Transporters are stored in the `transportistas` table:
+
+| Field | Type | Description |
+|---|---|---|
+| `tr_id` | INT (PK) | Unique transporter identifier |
+| `tr_nombre` | STRING | Transporter name |
+| `tr_tarifa` | DECIMAL(7,2) | Base rate |
+| `tr_estado` | TINYINT | Record status (`1` = active, `0` = deleted) |
+
+## Default transporters
+
+The following transporters are seeded by the SQL dump and present in every default installation:
+
+| ID | Name | Rate |
+|---|---|---|
+| 1 | Gorge Mata | 55.00 |
+| 2 | Mayra Rosales | 50.00 |
+| 3 | Jose Valle | 52.00 |
+
+## CRUD operations
+
+<CardGroup cols={2}>
+  <Card title="Create" icon="plus">
+    Add a new transporter with a name and base rate. The record is created with `tr_estado = 1` (active).
+  </Card>
+  <Card title="Read" icon="list">
+    List all active transporters. The list is used to populate the transporter selector in the trip creation form.
+  </Card>
+  <Card title="Update" icon="pencil">
+    Edit an existing transporter's name or rate.
+  </Card>
+  <Card title="Delete" icon="trash">
+    Soft-delete a transporter by setting `tr_estado = 0`. The record is retained in the database.
+  </Card>
+</CardGroup>
+
+## Soft delete
+
+Deleting a transporter sets `tr_estado = 0` rather than removing the row:
+
+```sql
+UPDATE transportistas SET tr_estado = 0 WHERE tr_id = ?;
+```
+
+<Warning>
+  Only transporters where `tr_estado = 1` appear in the trip creation form. Soft-deleted transporters are excluded but trips previously assigned to them retain the association.
+</Warning>

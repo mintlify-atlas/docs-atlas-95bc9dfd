@@ -1,0 +1,183 @@
+---
+title: "Database"
+description: "Database structure, table reference, relationships, and setup instructions for Sistema Viajes."
+---
+
+## Overview
+
+| Property | Value |
+|---|---|
+| Database name | `sistema_viajes` |
+| System | MySQL / MariaDB 10.4.32 |
+| SQL dump | `BD/sistema_viajes.sql` |
+| ORM | Sequelize (dialect: `mysql`) |
+| Host (development) | `localhost` |
+
+## Connection configuration
+
+The database connection is defined in `config/Conexion.js`:
+
+```js
+const sequelize = new Sequelize('sistema_viajes', 'root', '', {
+    host: "localhost",
+    dialect: 'mysql',
+});
+```
+
+<Note>
+  The default configuration uses the `root` user with an empty password. This is suitable for local development with a default XAMPP or WAMP installation. Update the credentials before deploying to any shared environment.
+</Note>
+
+## Tables
+
+The database contains 7 tables:
+
+| Table | Primary key | Description |
+|---|---|---|
+| `rol` | `rl_id` | User roles (Gerente de Tienda, Usuario) |
+| `usuarios` | `us_id` | User accounts linked to a role |
+| `colaboradores` | `cl_cedula` | Employee records |
+| `sucursales` | `sc_id` | Company branch locations |
+| `transportistas` | `tr_id` | Transporter records |
+| `colaborador_sucursal` | `cl_cedula` + `sc_id` (composite) | Many-to-many link between employees and branches, with distance |
+| `viajes` | `vj_id` | Trip records |
+
+### usuarios
+
+| Field | Type | Description |
+|---|---|---|
+| `us_id` | INT (PK, auto-increment) | Unique user ID |
+| `us_nombre` | VARCHAR | Full name |
+| `rl_id` | INT (FK → `rol.rl_id`) | Role ID |
+| `us_edad` | INT | Age |
+| `us_fecha_creacion` | DATE | Account creation date |
+| `us_correo` | VARCHAR | Email address (used for login) |
+| `password` | VARCHAR | Plain-text password |
+| `us_estado` | TINYINT | `1` = active, `0` = inactive |
+
+### colaboradores
+
+| Field | Type | Description |
+|---|---|---|
+| `cl_cedula` | VARCHAR (PK) | National ID number |
+| `cl_nombre` | VARCHAR | First name |
+| `cl_apellido` | VARCHAR | Last name |
+| `cl_telefono` | VARCHAR | Phone number |
+| `cl_correo` | VARCHAR | Email address |
+| `cl_estado` | TINYINT | `1` = active, `0` = soft-deleted |
+
+### sucursales
+
+| Field | Type | Description |
+|---|---|---|
+| `sc_id` | INT (PK, auto-increment) | Branch ID |
+| `sc_nombre` | VARCHAR | Branch name |
+| `sc_direccion` | VARCHAR | Address |
+| `sc_estado` | TINYINT | `1` = active, `0` = soft-deleted |
+
+### transportistas
+
+| Field | Type | Description |
+|---|---|---|
+| `tr_id` | INT (PK, auto-increment) | Transporter ID |
+| `tr_nombre` | VARCHAR | Full name |
+| `tr_placa` | VARCHAR | Vehicle plate number |
+| `tr_estado` | TINYINT | `1` = active, `0` = soft-deleted |
+
+### colaborador_sucursal
+
+| Field | Type | Description |
+|---|---|---|
+| `cl_cedula` | VARCHAR (FK → `colaboradores.cl_cedula`) | Employee national ID |
+| `sc_id` | INT (FK → `sucursales.sc_id`) | Branch ID |
+| `cs_distancia` | INT | Pre-configured distance in km between the employee and the branch |
+
+This table forms a many-to-many relationship between employees and branches. The composite primary key (`cl_cedula`, `sc_id`) ensures each employee-branch pair is unique. The `cs_distancia` field is read automatically when creating a trip to populate the distance field.
+
+### viajes
+
+| Field | Type | Description |
+|---|---|---|
+| `vj_id` | INT (PK, auto-increment) | Trip ID |
+| `us_id` | INT (FK → `usuarios.us_id`) | User (collaborator) ID |
+| `sc_id` | INT (FK → `sucursales.sc_id`) | Branch ID |
+| `tr_id` | INT (FK → `transportistas.tr_id`) | Transporter ID |
+| `vj_costo` | DECIMAL(7,2) | Trip cost |
+| `vj_recorrido` | INT | Distance in km |
+| `vj_fecha` | DATE | Trip date |
+| `vj_estado` | TINYINT | `1` = active |
+
+## Foreign key relationships
+
+| Table | Column | References |
+|---|---|---|
+| `usuarios` | `rl_id` | `rol.rl_id` |
+| `colaborador_sucursal` | `cl_cedula` | `colaboradores.cl_cedula` |
+| `colaborador_sucursal` | `sc_id` | `sucursales.sc_id` |
+| `viajes` | `us_id` | `usuarios.us_id` |
+| `viajes` | `sc_id` | `sucursales.sc_id` |
+| `viajes` | `tr_id` | `transportistas.tr_id` |
+
+## Soft delete pattern
+
+Records in `colaboradores`, `sucursales`, and `transportistas` are never permanently deleted. Instead, the `_estado` column is set to `0` to mark the record as inactive:
+
+| Table | Column | Active value | Inactive value |
+|---|---|---|---|
+| `colaboradores` | `cl_estado` | `1` | `0` |
+| `sucursales` | `sc_estado` | `1` | `0` |
+| `transportistas` | `tr_estado` | `1` | `0` |
+
+All queries that list or select records should filter on `estado = 1` to exclude inactive entries.
+
+## Setting up the database
+
+<Steps>
+  <Step title="Create the database">
+    Open your MySQL client (phpMyAdmin, MySQL Workbench, or the CLI) and create the database:
+
+    ```sql
+    CREATE DATABASE sistema_viajes;
+    ```
+  </Step>
+  <Step title="Import the SQL dump">
+    Import the provided dump file to create all tables and seed data:
+
+    <Tabs>
+      <Tab title="MySQL CLI">
+        ```bash
+        mysql -u root sistema_viajes < BD/sistema_viajes.sql
+        ```
+      </Tab>
+      <Tab title="phpMyAdmin">
+        1. Select the `sistema_viajes` database in the left panel.
+        2. Click the **Import** tab.
+        3. Choose `BD/sistema_viajes.sql` and click **Go**.
+      </Tab>
+    </Tabs>
+  </Step>
+  <Step title="Verify the connection">
+    Start the application and confirm it connects without errors:
+
+    ```bash
+    node app.js
+    ```
+
+    Sequelize will log a confirmation message if the connection succeeds.
+  </Step>
+</Steps>
+
+## Resetting the database
+
+To restore the database to its initial seeded state, drop and re-import:
+
+```sql
+DROP DATABASE sistema_viajes;
+CREATE DATABASE sistema_viajes;
+```
+
+Then re-run the import step above. This will remove all trips, collaborators, branches, and transporters added after the initial setup and restore the two default user accounts.
+
+<Warning>
+  Dropping the database permanently deletes all data. There is no built-in backup mechanism. Export a dump with `mysqldump` before resetting if you need to preserve any records.
+</Warning>

@@ -1,0 +1,52 @@
+---
+title: "List collaborators by branch"
+description: "Return active collaborators assigned to a given branch."
+---
+
+## Overview
+
+Returns a JSON array of active collaborators assigned to the specified branch. Used by the trip creation page to populate the collaborator selector.
+
+**Method**: `GET`  
+**Path**: `/viajes/:id`  
+**Auth required**: Yes (admin session)
+
+## Request
+
+### Path parameters
+
+<ParamField path="id" type="number" required>
+  The branch ID (`sc_id`) to look up collaborators for.
+</ParamField>
+
+## Response
+
+Returns a JSON array. Each element represents one active collaborator assigned to the branch.
+
+<ResponseField name="cl_nombre" type="string">
+  Full name of the collaborator.
+</ResponseField>
+
+<ResponseField name="cl_cedula" type="string">
+  National ID number (`cedula`) of the collaborator.
+</ResponseField>
+
+## Example
+
+```bash cURL
+curl -b cookies.txt http://localhost:3000/viajes/3
+```
+
+```json 200 OK
+[
+  { "cl_nombre": "María García", "cl_cedula": "1-0123-0456" },
+  { "cl_nombre": "Carlos Mora", "cl_cedula": "2-0789-0012" }
+]
+```
+
+## Error codes
+
+| Status | Condition |
+|--------|-----------|
+| `200` | Returns an empty array `[]` if no active collaborators are found for the branch |
+| `302` | Unauthenticated — redirected to login |

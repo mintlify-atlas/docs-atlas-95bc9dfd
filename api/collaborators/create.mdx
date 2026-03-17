@@ -1,0 +1,65 @@
+---
+title: "Create collaborator"
+description: "Add a new collaborator and assign them to a branch."
+---
+
+## Overview
+
+Creates a new collaborator record and assigns them to a branch with a specified distance. Redirects back to the collaborators page on success.
+
+**Method**: `POST`  
+**Path**: `/colaboradores/create`  
+**Auth required**: Yes (admin session)
+
+## Request
+
+### Body parameters
+
+Submit as `application/x-www-form-urlencoded` (HTML form).
+
+<ParamField body="cedula" type="string" required>
+  The collaborator's national ID number. Used as the primary key.
+</ParamField>
+
+<ParamField body="sucursal" type="number" required>
+  The branch ID (`sc_id`) to assign the collaborator to.
+</ParamField>
+
+<ParamField body="nombre" type="string" required>
+  The collaborator's first name.
+</ParamField>
+
+<ParamField body="apellido" type="string" required>
+  The collaborator's last name.
+</ParamField>
+
+<ParamField body="direccion" type="string" required>
+  The collaborator's home address.
+</ParamField>
+
+<ParamField body="distancia" type="number" required>
+  Distance in kilometers from the collaborator's address to the branch. Must be between `1` and `75`.
+</ParamField>
+
+## Response
+
+This endpoint responds with an HTTP redirect, not JSON.
+
+| Outcome | Redirect |
+|---------|----------|
+| Collaborator created successfully | `/colaboradores` |
+
+## Example
+
+```bash cURL
+curl -b cookies.txt -X POST http://localhost:3000/colaboradores/create \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "cedula=1-0123-0456&sucursal=2&nombre=María&apellido=García&direccion=San+José+Centro&distancia=12"
+```
+
+## Error codes
+
+| Status | Condition |
+|--------|-----------|
+| `302` | Collaborator created — redirect to `/colaboradores` |
+| `302` | Unauthenticated — redirected to login |

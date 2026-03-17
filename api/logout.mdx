@@ -1,0 +1,43 @@
+---
+title: "Logout"
+description: "End the current user session and redirect to the login page."
+---
+
+## Overview
+
+Destroys the server-side session, clears the session cookie from the client, and redirects the user to `/index`.
+
+**Method**: `GET`  
+**Path**: `/cerrar`  
+**Auth required**: No (but only meaningful when a session exists)
+
+## Request
+
+No request body or parameters required.
+
+## Response
+
+This endpoint always responds with an HTTP redirect. There is no JSON body.
+
+| Outcome | Redirect destination |
+|---------|---------------------|
+| Session destroyed successfully | `/index` |
+| Session destruction error | `/` |
+
+## Example
+
+```bash cURL
+curl -b cookies.txt -c cookies.txt http://localhost:3000/cerrar
+```
+
+```html HTML link
+<a href="/cerrar">Logout</a>
+```
+
+## Behavior
+
+1. `req.session.destroy()` removes the server-side session record.
+2. `res.clearCookie('connect.sid')` clears the session cookie from the browser.
+3. The user is redirected to `/index`.
+
+If `session.destroy()` returns an error, the redirect goes to `/` instead of `/index`.

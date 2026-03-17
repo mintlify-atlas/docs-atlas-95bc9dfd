@@ -1,0 +1,58 @@
+---
+title: "Branches"
+description: "Manage company branch locations used as trip destinations in Sistema Viajes."
+---
+
+## Overview
+
+Branches (sucursales) represent the company locations that employees travel to. Each branch can be assigned to multiple collaborators and serves as a destination in trip creation.
+
+## Data model
+
+Branches are stored in the `sucursales` table:
+
+| Field | Type | Description |
+|---|---|---|
+| `sc_id` | INT (PK, auto-increment) | Unique branch identifier |
+| `sc_nombre` | STRING | Branch name |
+| `sc_direccion` | STRING | Branch address |
+| `sc_estado` | TINYINT | Record status (`1` = active, `0` = deleted) |
+
+## Default branches
+
+The following branches are seeded by the SQL dump and present in every default installation:
+
+| ID | Name |
+|---|---|
+| 1 | SPS-Armenta |
+| 2 | TGU-San ignasio |
+| 3 | CB-Villa Neen |
+
+## CRUD operations
+
+<CardGroup cols={2}>
+  <Card title="Create" icon="plus">
+    Add a new branch with a name and address. The branch is created with `sc_estado = 1` (active).
+  </Card>
+  <Card title="Read" icon="list">
+    List all active branches. The branch list is used to populate the branch selector in the trip creation form.
+  </Card>
+  <Card title="Update" icon="pencil">
+    Edit an existing branch's name or address.
+  </Card>
+  <Card title="Delete" icon="trash">
+    Soft-delete a branch by setting `sc_estado = 0`. The record is retained in the database.
+  </Card>
+</CardGroup>
+
+## Soft delete
+
+Deleting a branch sets `sc_estado = 0` rather than removing the row:
+
+```sql
+UPDATE sucursales SET sc_estado = 0 WHERE sc_id = ?;
+```
+
+<Warning>
+  Only branches where `sc_estado = 1` appear in the trip creation dropdown. Soft-deleted branches are excluded but their historical trip records remain intact.
+</Warning>

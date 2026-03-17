@@ -1,0 +1,45 @@
+---
+title: "Delete collaborator"
+description: "Soft-delete a collaborator by setting their status to inactive."
+---
+
+## Overview
+
+Marks a collaborator as inactive (`cl_estado = 0`). The record is not removed from the database. Redirects to the collaborators page on completion.
+
+**Method**: `POST`  
+**Path**: `/colaboradores/delete/:id`  
+**Auth required**: Yes (admin session)
+
+<Note>
+  This is a soft delete. The collaborator record is retained in the database with `cl_estado` set to `0`. The collaborator will no longer appear in active listings.
+</Note>
+
+## Request
+
+### Path parameters
+
+<ParamField path="id" type="number" required>
+  The ID of the collaborator to deactivate.
+</ParamField>
+
+## Response
+
+This endpoint responds with an HTTP redirect, not JSON.
+
+| Outcome | Redirect |
+|---------|----------|
+| Deactivation successful | `/colaboradores` |
+
+## Example
+
+```bash cURL
+curl -b cookies.txt -X POST http://localhost:3000/colaboradores/delete/5
+```
+
+## Error codes
+
+| Status | Condition |
+|--------|-----------|
+| `302` | Collaborator deactivated — redirect to `/colaboradores` |
+| `302` | Unauthenticated — redirected to login |

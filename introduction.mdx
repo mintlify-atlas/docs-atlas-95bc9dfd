@@ -1,0 +1,53 @@
+---
+title: "Introduction"
+description: "Sistema Viajes (TRC) — Employee transportation management for multi-branch organizations"
+---
+
+## What is Sistema Viajes?
+
+Sistema Viajes (TRC) is a web-based employee transportation management system built with Node.js and Express. It enables organizations to efficiently coordinate employee trips between branches, manage transporters, and generate detailed reports on transportation costs and routes.
+
+The system supports two user roles — **Store Manager (Gerente de Tienda)** and **User** — each with tailored access to system features.
+
+<CardGroup cols={2}>
+  <Card title="Quick Start" icon="rocket" href="/quickstart">
+    Get the system running locally in minutes
+  </Card>
+  <Card title="Installation" icon="server" href="/installation">
+    Full setup guide with database configuration
+  </Card>
+  <Card title="Trips" icon="car" href="/features/trips">
+    Create and manage employee transportation trips
+  </Card>
+  <Card title="API Reference" icon="code" href="/api/login">
+    Explore all available endpoints
+  </Card>
+</CardGroup>
+
+## Core modules
+
+Sistema Viajes is organized around five core data entities:
+
+| Module | Description |
+|---|---|
+| **Trips (Viajes)** | Record employee transportation trips with cost, distance, branch, and transporter |
+| **Collaborators (Colaboradores)** | Manage employees and their branch-distance assignments |
+| **Branches (Sucursales)** | Company branch locations that serve as trip destinations |
+| **Transporters (Transportistas)** | Transportation providers with rate information |
+| **Reports (Reportes)** | Aggregated trip data across all entities |
+
+## Technology stack
+
+- **Runtime**: Node.js with Express 5
+- **Templating**: EJS (Embedded JavaScript)
+- **ORM**: Sequelize 6 with MySQL/MariaDB
+- **Auth**: Session-based with `express-session`
+- **Password hashing**: bcrypt
+- **Database**: MySQL / MariaDB (`sistema_viajes` schema)
+
+## Access control
+
+The system uses a role-based access model with two roles defined in the `rol` table:
+
+- **Role 1 — Gerente de Tienda**: Full admin access. Can create trips, manage collaborators, branches, transporters, and view reports.
+- **Role 2 — Usuario**: Standard access with limited permissions. Redirected to the standard dashboard after login.

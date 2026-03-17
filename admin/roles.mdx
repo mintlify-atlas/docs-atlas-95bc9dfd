@@ -1,0 +1,97 @@
+---
+title: "Roles"
+description: "User roles, access levels, and how access control is enforced in Sistema Viajes."
+---
+
+## Overview
+
+Sistema Viajes has two roles. Every user account in the `usuarios` table has an `rl_id` column that determines which routes and views they can access.
+
+## Role definitions
+
+Roles are stored in the `rol` table:
+
+```sql
+CREATE TABLE `rol` (
+  `rl_id` int(11) NOT NULL,
+  `rl_nombre` varchar(50) NOT NULL,
+  `rl_descripcion` text NOT NULL,
+  `rl_estado` tinyint(1) NOT NULL
+);
+
+INSERT INTO `rol` VALUES
+(1, 'Gerente de Tienda', 'Super admin con acceso a todo el sistema', 1),
+(2, 'Usuario', 'administrador con permisos mas limitados ', 1);
+```
+
+| Field | Type | Description |
+|---|---|---|
+| `rl_id` | INT (PK) | Unique role identifier |
+| `rl_nombre` | VARCHAR(50) | Display name |
+| `rl_descripcion` | TEXT | Role description |
+| `rl_estado` | TINYINT | `1` = active |
+
+## Role comparison
+
+| Route / Feature | Gerente de Tienda (`rl_id = 1`) | Usuario (`rl_id = 2`) |
+|---|---|---|
+| `GET /dashboardAdmin` | Yes | No |
+| `GET /dashboard` | No | Yes (redirected here on login) |
+| `GET /viajes` | Yes | No — returns `403 Acceso denegado` |
+| `GET /colaboradores` | Yes | No |
+| `GET /sucursales` | Yes | No |
+| `GET /transportistas` | Yes | No |
+| `GET /reportes` | Yes | No |
+| Session written on login | Yes | No (see note below) |
+
+## How access control works
+
+Route-level access control checks `req.session.usuario.rl_id` at the top of each handler. The trips route is a representative example:
+
+```js
+app.get('/viajes', async (req, res) => {
+    if (req.session.usuario && req.session.usuario.rl_id == 1) {
+        res.render('viajes', { usuario: req.session.usuario, sucursales, transportista });
+    } else {
+        res.status(403).send('Acceso denegado');
+    }
+});
+```
+
+The guard has two parts:
+
+1. `req.session.usuario` — confirms a session exists at all.
+2. `req.session.usuario.rl_id == 1` — confirms the user is an admin.
+
+If either condition fails, the server responds with `403 Acceso denegado`. The same pattern is applied on all admin-only routes.
+
+## Login redirect by role
+
+After password verification, the login controller redirects the user based on `rl_id`:
+
+```js
+if (usuario.password === contra) {
+  if (usuario.rl_id === 1) {
+    req.session.usuario = usuario;
+    return res.redirect('/dashboardAdmin');
+  }
+  return res.redirect('/dashboard');
+}
+```
+
+<Warning>
+  `req.session.usuario` is only set for `rl_id = 1` users. Role `2` users are redirected to `/dashboard` without a session being written. This means any route that reads `req.session.usuario` will see `undefined` for those users, and admin guards will evaluate to `false` as expected — but it also means the standard dashboard cannot rely on session data for the logged-in user.
+</Warning>
+
+## Default accounts
+
+The SQL dump includes two seed accounts for testing:
+
+| ID | Name | Email | Password | Role |
+|---|---|---|---|---|
+| 1 | Nancy | jpenia55@gmail.com | `nancy` | Gerente de Tienda (`rl_id = 1`) |
+| 2 | Josue | 7josueortega111@gmail.com | `josue` | Usuario (`rl_id = 2`) |
+
+<Warning>
+  These are plain-text seed passwords intended for local development only. Change them before deploying to any shared or production environment.
+</Warning>

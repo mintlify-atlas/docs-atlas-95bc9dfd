@@ -1,0 +1,45 @@
+---
+title: "Delete transporter"
+description: "Soft-delete a transporter by setting their status to inactive."
+---
+
+## Overview
+
+Marks a transporter as inactive (`tr_estado = 0`). The record is not removed from the database. Redirects to the transporters page on completion.
+
+**Method**: `POST`  
+**Path**: `/transportistas/delete/:id`  
+**Auth required**: Yes (admin session)
+
+<Note>
+  This is a soft delete. The transporter record is retained in the database with `tr_estado` set to `0`.
+</Note>
+
+## Request
+
+### Path parameters
+
+<ParamField path="id" type="number" required>
+  The ID of the transporter to deactivate.
+</ParamField>
+
+## Response
+
+This endpoint responds with an HTTP redirect, not JSON.
+
+| Outcome | Redirect |
+|---------|----------|
+| Deactivation successful | `/transportistas` |
+
+## Example
+
+```bash cURL
+curl -b cookies.txt -X POST http://localhost:3000/transportistas/delete/2
+```
+
+## Error codes
+
+| Status | Condition |
+|--------|-----------|
+| `302` | Transporter deactivated — redirect to `/transportistas` |
+| `302` | Unauthenticated — redirected to login |

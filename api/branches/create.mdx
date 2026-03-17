@@ -1,0 +1,49 @@
+---
+title: "Create branch"
+description: "Add a new branch location."
+---
+
+## Overview
+
+Creates a new branch record with status defaulting to active (`sc_estado = 1`). Redirects back to the branches page on success.
+
+**Method**: `POST`  
+**Path**: `/sucursales/create`  
+**Auth required**: Yes (admin session)
+
+## Request
+
+### Body parameters
+
+Submit as `application/x-www-form-urlencoded` (HTML form).
+
+<ParamField body="sc_nombre" type="string" required>
+  Name of the branch.
+</ParamField>
+
+<ParamField body="sc_direccion" type="string" required>
+  Physical address of the branch.
+</ParamField>
+
+## Response
+
+This endpoint responds with an HTTP redirect, not JSON.
+
+| Outcome | Redirect |
+|---------|----------|
+| Branch created successfully | `/sucursales` |
+
+## Example
+
+```bash cURL
+curl -b cookies.txt -X POST http://localhost:3000/sucursales/create \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "sc_nombre=Sucursal+Norte&sc_direccion=Av.+Principal+100"
+```
+
+## Error codes
+
+| Status | Condition |
+|--------|-----------|
+| `302` | Branch created — redirect to `/sucursales` |
+| `302` | Unauthenticated — redirected to login |

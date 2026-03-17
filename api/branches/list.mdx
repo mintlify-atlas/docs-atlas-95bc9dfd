@@ -1,0 +1,33 @@
+---
+title: "List branches"
+description: "Render the branches management page with all branches."
+---
+
+## Overview
+
+Renders the `sucursales` view. Returns an HTML page — not a JSON response. The page lists all branch records for management.
+
+**Method**: `GET`  
+**Path**: `/sucursales`  
+**Auth required**: Yes (admin session)
+
+## Request
+
+No parameters required.
+
+## Response
+
+Returns an HTML page populated with branch records from the database.
+
+## Example
+
+```bash cURL
+curl -b cookies.txt http://localhost:3000/sucursales
+```
+
+## Error codes
+
+| Status | Condition |
+|--------|-----------|
+| `200` | Returns the branches HTML page |
+| `302` | Unauthenticated — redirected to login |

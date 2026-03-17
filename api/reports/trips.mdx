@@ -1,0 +1,59 @@
+---
+title: "Trip reports"
+description: "Retrieve all trip records with joined user, branch, and transporter data."
+---
+
+## Overview
+
+Renders the `reportes` view with all trip records. Returns an HTML page — not a JSON response. The page joins trip data with user, branch, and transporter names for display.
+
+**Method**: `GET`  
+**Path**: `/reportes`  
+**Auth required**: Yes (admin session)
+
+## Request
+
+No parameters required.
+
+## Response
+
+Returns an HTML page. The template receives a `via` array where each element represents one trip record.
+
+### Trip record fields
+
+<ResponseField name="us_nombre" type="string">
+  Name of the user (employee) who took the trip.
+</ResponseField>
+
+<ResponseField name="sc_nombre" type="string">
+  Name of the branch associated with the trip.
+</ResponseField>
+
+<ResponseField name="tr_nombre" type="string">
+  Name of the transporter assigned to the trip.
+</ResponseField>
+
+<ResponseField name="vj_costo" type="number">
+  Total cost of the trip.
+</ResponseField>
+
+<ResponseField name="vj_recorrido" type="number">
+  Distance traveled in kilometers.
+</ResponseField>
+
+<ResponseField name="vj_fecha" type="string">
+  Date and time the trip was recorded.
+</ResponseField>
+
+## Example
+
+```bash cURL
+curl -b cookies.txt http://localhost:3000/reportes
+```
+
+## Error codes
+
+| Status | Condition |
+|--------|-----------|
+| `200` | Returns the reports HTML page |
+| `302` | Unauthenticated — redirected to login |

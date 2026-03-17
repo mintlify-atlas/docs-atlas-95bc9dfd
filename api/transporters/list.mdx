@@ -1,0 +1,33 @@
+---
+title: "List transporters"
+description: "Render the transporters management page with all transporters."
+---
+
+## Overview
+
+Renders the `transportistas` view. Returns an HTML page — not a JSON response. The page lists all transporter records for management.
+
+**Method**: `GET`  
+**Path**: `/transportistas`  
+**Auth required**: Yes (admin session)
+
+## Request
+
+No parameters required.
+
+## Response
+
+Returns an HTML page populated with transporter records from the database.
+
+## Example
+
+```bash cURL
+curl -b cookies.txt http://localhost:3000/transportistas
+```
+
+## Error codes
+
+| Status | Condition |
+|--------|-----------|
+| `200` | Returns the transporters HTML page |
+| `302` | Unauthenticated — redirected to login |

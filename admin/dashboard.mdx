@@ -1,0 +1,74 @@
+---
+title: "Dashboard"
+description: "The two dashboards in Sistema Viajes and how to navigate between features."
+---
+
+## Overview
+
+Sistema Viajes has two separate dashboard views, one for each role. The correct dashboard is loaded automatically after login based on the user's `rl_id`.
+
+## Standard user dashboard
+
+**Route:** `GET /dashboard`  
+**View:** `views/dashboard.ejs`  
+**Access:** Role `2` (Usuario) — redirected here after login.
+
+The standard dashboard is shown to users with `rl_id = 2`. Because the login controller does not write a session for these users, `req.session.usuario` will be `undefined` inside this view.
+
+<Note>
+  The standard dashboard does not have access to any admin routes. Navigating directly to `/viajes`, `/colaboradores`, `/sucursales`, `/transportistas`, or `/reportes` while logged in as a role `2` user will return `403 Acceso denegado`.
+</Note>
+
+## Admin dashboard
+
+**Route:** `GET /dashboardAdmin`  
+**View:** `views/dashboardAdmin.ejs`  
+**Access:** Role `1` (Gerente de Tienda) only.
+
+The admin dashboard is the central navigation hub for all management features. It provides quick links to every module in the system.
+
+### Quick links
+
+<CardGroup cols={2}>
+  <Card title="Trips" icon="route" href="/features/trips">
+    Create and view employee transportation trips. Route: `GET /viajes`.
+  </Card>
+  <Card title="Collaborators" icon="users" href="/features/collaborators">
+    Manage employee records and branch assignments. Route: `GET /colaboradores`.
+  </Card>
+  <Card title="Branches" icon="building" href="/features/branches">
+    Add and manage company branch locations. Route: `GET /sucursales`.
+  </Card>
+  <Card title="Transporters" icon="truck" href="/features/transporters">
+    Manage transporter records used in trips. Route: `GET /transportistas`.
+  </Card>
+  <Card title="Reports" icon="chart-bar" href="/features/reports">
+    View and filter trip reports. Route: `GET /reportes`.
+  </Card>
+</CardGroup>
+
+## Navigating between dashboards
+
+Both dashboards include navigation links to the modules the user is permitted to access. The admin dashboard renders links to all five feature modules. The standard dashboard does not render links to admin-only routes.
+
+There is no route to switch roles without logging out and logging back in with a different account.
+
+## Logout
+
+Sending a `GET` request to `/cerrar` ends the current session for both dashboard types:
+
+```http
+GET /cerrar
+```
+
+<Steps>
+  <Step title="Destroy the session">
+    `req.session.destroy()` is called, removing the server-side session record.
+  </Step>
+  <Step title="Clear the cookie">
+    The session cookie is cleared from the client browser.
+  </Step>
+  <Step title="Redirect to login">
+    The server redirects to `/index`, which renders the login page (`views/index.ejs`).
+  </Step>
+</Steps>

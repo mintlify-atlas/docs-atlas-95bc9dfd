@@ -1,0 +1,90 @@
+---
+title: "Collaborators"
+description: "Manage employees and their branch-distance assignments in Sistema Viajes."
+---
+
+## Overview
+
+Collaborators (colaboradores) are the employees who use the transportation service. Each collaborator has a unique national ID (`cl_cedula`) and can be assigned to one or more branches, with a specific distance recorded per assignment.
+
+## Data model
+
+Collaborators are stored in the `colaboradores` table:
+
+| Field | Type | Description |
+|---|---|---|
+| `cl_cedula` | STRING (PK) | National ID number (primary key) |
+| `cl_nombre` | STRING | First name |
+| `cl_apellido` | STRING | Last name |
+| `cl_direccion` | STRING | Home address |
+| `cl_estado` | TINYINT | Record status (`1` = active, `0` = deleted) |
+
+## Multi-branch assignment
+
+A collaborator can be linked to multiple branches. The `colaborador_sucursal` join table records each assignment:
+
+| Column | Description |
+|---|---|
+| `cl_cedula` | Collaborator national ID (composite PK) |
+| `sc_id` | Branch ID (composite PK) |
+| `distancia` | Distance in km between the collaborator's address and the branch |
+
+This table is used at trip creation time to auto-populate the distance field.
+
+## Creating a collaborator
+
+The create form submits to the collaborator creation endpoint with the following fields:
+
+| Field | Description |
+|---|---|
+| `cedula` | National ID |
+| `sucursal` | Branch ID to assign |
+| `nombre` | First name |
+| `apellido` | Last name |
+| `direccion` | Home address |
+| `distancia` | Distance to the assigned branch (1–75 km) |
+
+### Validation
+
+- `distancia` must be between **1 and 75** km. Values outside this range are rejected.
+
+### Transaction
+
+Creation uses a database transaction to ensure both operations succeed together or neither is committed:
+
+1. Insert a record into the `colaboradores` table.
+2. Insert a record into the `colaborador_sucursal` table linking the collaborator to the selected branch with the given distance.
+
+<Note>
+  If either insert fails, the transaction is rolled back and no partial data is saved.
+</Note>
+
+## Updating a collaborator
+
+The update form accepts the following fields:
+
+| Field | Description |
+|---|---|
+| `up_cedula` | National ID (identifies the record) |
+| `up_sucursal` | Branch ID |
+| `up_nombre` | First name |
+| `up_apellido` | Last name |
+| `up_direccion` | Home address |
+| `up_distancia` | Distance to branch (1–50 km) |
+
+### Validation
+
+- `up_distancia` must be between **1 and 50** km on update. This is a stricter limit than on creation.
+
+## Soft delete
+
+Deleting a collaborator does not remove the database record. Instead, the `cl_estado` field is set to `0`:
+
+```javascript
+// Soft delete — sets cl_estado = 0
+await colaborador.update({ cl_estado: 0 }, { where: { cl_cedula: cedula } });
+```
+
+<Warning>
+  Soft-deleted collaborators (`cl_estado = 0`) are hidden from the UI but remain in the database. Queries that list active collaborators must filter by `cl_estado = 1`.
+</Warning>
